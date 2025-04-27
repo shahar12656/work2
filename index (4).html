@@ -1,0 +1,199 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שחר SalesVision - מערכת ויזואליזציה</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            border-bottom: 4px solid #ffffff20;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.3rem;
+            max-width: 900px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #00c4b4, #7b61ff);
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #7b61ff, #00c4b4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(90deg, #1e3a8a, #312e81);
+            margin-top: 3rem;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            header p {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 1rem 1.8rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 2rem 1rem;
+            }
+
+            .container {
+                margin: 2rem auto;
+            }
+
+            .buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>שחר SalesVision</h1>
+        <p>מערכת ויזואליזציה מתקדמת לחברה קמעונאית בינלאומית, הפועלת בארצות הברית, קנדה ומקסיקו, ומתמחה במכירת מוצרי טכנולוגיה, ריהוט וציוד משרדי. חוויית משתמש אינטואיטיבית, תובנות בזמן אמת וניתוח מדויק לשיפור ביצועים עסקיים.</p>
+    </header>
+
+    <div class="container">
+        <div class="buttons">
+            <a href="dash1.html" class="btn">מערכת 1 - ניתוח מכירות ורווח לפי קטגוריות ואזורים</a>
+            <a href="dash2.html" class="btn">מערכת 2 - שביעות רצון הלקוחות וניתוח החזרות</a>
+            <a href="dash3.html" class="btn">מערכת 3 - השפעת הנחות ועלויות משלוח על הרווחיות</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 שחר SalesVision. כל הזכויות שמורות.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', () => {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            button.addEventListener('mouseover', () => {
+                button.style.transform = 'translateY(-5px)';
+            });
+
+            button.addEventListener('mouseout', () => {
+                button.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
